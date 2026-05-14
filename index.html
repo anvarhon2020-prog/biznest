@@ -6,6 +6,7 @@
 <title>Biznest CRM — Узбекистан</title>
 <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
   --green: #1D9E75;
@@ -1218,59 +1219,62 @@ function copyContract() {
 function downloadPDF() {
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 22;
-    const usableW = pageW - margin * 2;
 
-    // Header
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('ДОГОВОР-ОБЯЗАТЕЛЬСТВО', pageW / 2, 24, { align: 'center' });
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text('№ ' + contractNum, pageW / 2, 30, { align: 'center' });
-    doc.text('г. Ташкент', pageW / 2, 36, { align: 'center' });
+    const el = document.createElement('div');
+    el.style.cssText = `
+      position:fixed; left:-9999px; top:0;
+      width:794px; padding:60px 70px;
+      background:#fff; color:#1a1a18;
+      font-family:'Georgia',serif; font-size:13px; line-height:1.9;
+      box-sizing:border-box;
+    `;
 
-    // Divider
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, 40, pageW - margin, 40);
+    const escaped = contractText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const paragraphs = escaped.split('\n').map(line => {
+      if (!line.trim()) return '<div style="height:8px"></div>';
+      const isBold = line.trim().startsWith('ДОГОВОР') || line.trim().startsWith('№') || line.trim().startsWith('г.') || /^[А-ЯA-Z\s]{5,}$/.test(line.trim());
+      return `<div style="margin-bottom:4px;${isBold ? 'font-weight:bold;text-align:center;' : ''}">${line}</div>`;
+    }).join('');
 
-    // Body
-    doc.setTextColor(30, 30, 30);
-    doc.setFontSize(9.5);
-    doc.setFont('helvetica', 'normal');
+    el.innerHTML = `
+      <div style="text-align:center;margin-bottom:24px;border-bottom:2px solid #1a1a18;padding-bottom:16px;">
+        <div style="font-size:18px;font-weight:bold;letter-spacing:1px;margin-bottom:6px;">ДОГОВОР-ОБЯЗАТЕЛЬСТВО</div>
+        <div style="font-size:13px;color:#555;">№ ${contractNum} · г. Ташкент</div>
+      </div>
+      <div style="text-align:justify;">${paragraphs}</div>
+      <div style="margin-top:40px;padding-top:14px;border-top:1px solid #ccc;font-size:11px;color:#999;text-align:center;">
+        Biznest CRM · biznest.uz · Документ соответствует законодательству Республики Узбекистан
+      </div>
+    `;
+    document.body.appendChild(el);
 
-    const lines = doc.splitTextToSize(contractText, usableW);
-    let y = 48;
-    lines.forEach(line => {
-      if (y > pageH - 24) {
-        doc.addPage();
-        y = 20;
+    html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+      document.body.removeChild(el);
+      const imgData = canvas.toDataURL('image/png');
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const imgW = pageW;
+      const imgH = (canvas.height * pageW) / canvas.width;
+      let position = 0;
+      let remaining = imgH;
+
+      while (remaining > 0) {
+        doc.addImage(imgData, 'PNG', 0, position, imgW, imgH);
+        remaining -= pageH;
+        position -= pageH;
+        if (remaining > 0) doc.addPage();
       }
-      doc.text(line, margin, y);
-      y += 5.2;
+
+      doc.save('dogovor-' + contractNum + '.pdf');
+      showToast('PDF скачан! Ищите в папке «Загрузки»');
+      document.getElementById('share-result').innerHTML =
+        '<div style="background:var(--green-light);border:1px solid #9FE1CB;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--green-dark);display:flex;align-items:center;gap:8px;"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PDF скачан — файл <strong>dogovor-' + contractNum + '.pdf</strong> в папке «Загрузки»</div>';
+    }).catch(() => {
+      document.body.removeChild(el);
+      showToast('Ошибка создания PDF', 'error');
     });
-
-    // Footer
-    const totalPages = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-      doc.setPage(i);
-      doc.setDrawColor(220, 220, 220);
-      doc.line(margin, pageH - 14, pageW - margin, pageH - 14);
-      doc.setFontSize(8);
-      doc.setTextColor(170, 170, 170);
-      doc.text('Biznest CRM · biznest.uz · Документ соответствует законодательству РУз', margin, pageH - 8);
-      doc.text('Стр. ' + i + ' / ' + totalPages, pageW - margin, pageH - 8, { align: 'right' });
-    }
-
-    doc.save('dogovor-' + contractNum + '.pdf');
-    showToast('PDF успешно скачан! Проверьте папку «Загрузки»');
-    document.getElementById('share-result').innerHTML =
-      '<div style="background:var(--green-light);border:1px solid #9FE1CB;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--green-dark);display:flex;align-items:center;gap:8px;margin-top:0;"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PDF скачан — ищите файл <strong>dogovor-' + contractNum + '.pdf</strong> в папке «Загрузки»</div>';
-  } catch (e) {
+  } catch(e) {
     showToast('Ошибка создания PDF', 'error');
   }
 }
