@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biznest CRM — Узбекистан</title>
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --green: #1D9E75;
+  --green-dark: #0F6E56;
+  --green-light: #E1F5EE;
+  --green-mid: #5DCAA5;
+  --red: #E24B4A;
+  --red-light: #FCEBEB;
+  --amber: #BA7517;
+  --amber-light: #FAEEDA;
+  --blue: #185FA5;
+  --blue-light: #E6F1FB;
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --border: rgba(0,0,0,0.08);
+  --border-med: rgba(0,0,0,0.14);
+  --text: #1A1A18;
+  --text-2: #6B6A65;
+  --text-3: #A8A7A2;
+  --sidebar-w: 220px;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Geologica', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Layout ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+
+.logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--green);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+.logo-name { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.logo-tagline { font-size: 11px; color: var(--text-3); padding-left: 42px; }
+
+nav { padding: 10px 0; flex: 1; }
+.nav-section {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 12px 20px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 13.5px;
+  font-weight: 400;
+  border-right: 2px solid transparent;
+  transition: all 0.12s;
+}
+.nav-item:hover { background: var(--bg); color: var(--text); }
+.nav-item.active {
+  background: var(--green-light);
+  color: var(--green-dark);
+  font-weight: 500;
+  border-right-color: var(--green);
+}
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+}
+.plan-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--green-light);
+  color: var(--green-dark);
+  font-size: 11px; font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+}
+.plan-upgrade {
+  font-size: 11px; color: var(--text-3); cursor: pointer;
+}
+.plan-upgrade:hover { color: var(--green); }
+
+/* ── Main ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.page-content { padding: 28px; flex: 1; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px; font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-med);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Geologica', sans-serif;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg); border-color: var(--border-med); }
+.btn-primary { background: var(--green); border-color: var(--green); color: #fff; }
+.btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+.btn-danger { background: var(--red-light); border-color: #F09595; color: var(--red); }
+.btn-danger:hover { background: #F7C1C1; }
+.btn-tg { background: var(--blue-light); border-color: #85B7EB; color: var(--blue); }
+.btn-tg:hover { background: #B5D4F4; }
+.btn-pdf { background: var(--green-light); border-color: #9FE1CB; color: var(--green-dark); }
+.btn-pdf:hover { background: #9FE1CB; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-icon { padding: 7px; }
+
+/* ── Cards / Surfaces ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+/* ── Metrics ── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.metric {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+.metric-label { font-size: 12px; color: var(--text-3); margin-bottom: 6px; font-weight: 400; }
+.metric-value { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; line-height: 1; }
+.metric-sub { font-size: 12px; margin-top: 4px; }
+.metric-sub.up { color: var(--green); }
+.metric-sub.down { color: var(--red); }
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th {
+  text-align: left; padding: 10px 14px;
+  font-size: 11.5px; font-weight: 500;
+  color: var(--text-3); letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg); }
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 500;
+  padding: 3px 9px; border-radius: 20px;
+}
+.badge-green { background: var(--green-light); color: var(--green-dark); }
+.badge-red { background: var(--red-light); color: var(--red); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+.badge-blue { background: var(--blue-light); color: var(--blue); }
+.badge-gray { background: #F1EFE8; color: #5F5E5A; }
+
+/* ── Forms ── */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block; font-size: 12px; font-weight: 500;
+  color: var(--text-2); margin-bottom: 5px;
+}
+.form-control {
+  width: 100%; padding: 9px 12px;
+  font-size: 13.5px; font-weight: 400;
+  font-family: 'Geologica', sans-serif;
+  border: 1px solid var(--border-med);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: border 0.12s;
+}
+.form-control:focus { border-color: var(--green); }
+textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.6; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* ── Auto description box ── */
+.auto-desc-box {
+  background: var(--green-light);
+  border: 1px solid #9FE1CB;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--green-dark);
+  line-height: 1.6;
+}
+.auto-desc-label {
+  font-size: 11px; font-weight: 500;
+  color: var(--green);
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* ── Steps ── */
+.steps {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 24px;
+}
+.step-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-3);
+}
+.step-item.active { color: var(--green); }
+.step-item.done { color: var(--text-2); }
+.step-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border-med);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.step-item.active .step-num { background: var(--green); border-color: var(--green); color: #fff; }
+.step-item.done .step-num { background: var(--green-light); border-color: #9FE1CB; color: var(--green-dark); }
+.step-line { flex: 1; height: 1px; background: var(--border-med); max-width: 40px; margin: 0 4px; }
+
+/* ── Contract output ── */
+.contract-output {
+  background: var(--bg);
+  border: 1px solid var(--border-med);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--text);
+  white-space: pre-wrap;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+/* ── Share buttons ── */
+.share-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+.share-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--surface);
+  transition: all 0.12s;
+}
+.share-card:hover { background: var(--bg); border-color: var(--border-med); }
+.share-card svg { width: 28px; height: 28px; margin-bottom: 8px; }
+.share-card-title { font-size: 13px; font-weight: 500; }
+.share-card-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+/* ── Integrations ── */
+.integration-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.integration-row:last-child { border-bottom: none; }
+.integration-info { display: flex; align-items: center; gap: 12px; }
+.integration-logo {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+.integration-name { font-size: 14px; font-weight: 500; }
+.integration-desc { font-size: 12px; color: var(--text-3); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--text);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.25s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--green-dark); }
+.toast.error { background: var(--red); }
+
+/* ── Loading ── */
+.dots-loader {
+  display: flex; gap: 6px; justify-content: center;
+  margin: 32px 0;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse { 0%,80%,100%{opacity:0.2;transform:scale(0.85)} 40%{opacity:1;transform:scale(1)} }
+
+/* ── AI Chat ── */
+.ai-message {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 13.5px; line-height: 1.7;
+  margin-bottom: 10px;
+}
+.ai-message.user {
+  background: var(--green-light);
+  color: var(--green-dark);
+  margin-left: 40px;
+}
+.ai-message.assistant {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-right: 40px;
+}
+
+/* ── Debt cards ── */
+.debt-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  transition: border-color 0.12s;
+}
+.debt-card:hover { border-color: var(--border-med); }
+.debt-card.has-contract { border-color: #9FE1CB; }
+.debt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.debt-name { font-size: 15px; font-weight: 600; }
+.debt-meta { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.debt-amount { font-size: 22px; font-weight: 600; color: var(--red); letter-spacing: -0.4px; }
+.debt-since { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.debt-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+}
+
+/* ── Telegram preview ── */
+.tg-bubble {
+  background: #EAF3FF;
+  border-radius: 12px 12px 12px 2px;
+  padding: 12px 14px;
+  font-size: 13px; line-height: 1.7;
+  color: #0A1929;
+  white-space: pre-wrap;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.tg-meta { font-size: 11px; color: #5B9BD5; margin-bottom: 6px; }
+
+/* ── Pages ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── Avatar ── */
+.avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ── Section header ── */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title { font-size: 15px; font-weight: 600; }
+
+/* ── Two column layout ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── Info row ── */
+.info-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-key { color: var(--text-3); }
+.info-val { font-weight: 500; }
+
+/* ── Notice ── */
+.notice {
+  background: var(--blue-light);
+  border: 1px solid #B5D4F4;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--blue);
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <div class="logo-icon">B</div>
+        <span class="logo-name">Biznest</span>
+      </div>
+      <div class="logo-tagline">CRM для малого бизнеса</div>
+    </div>
+
+    <nav>
+      <div class="nav-section">Главное</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Главная
+      </div>
+      <div class="nav-item" onclick="showPage('clients',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Клиенты
+      </div>
+      <div class="nav-item" onclick="showPage('deals',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        Сделки
+      </div>
+      <div class="nav-item" onclick="showPage('debts',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Долги
+        <span class="badge badge-red" style="margin-left:auto;padding:2px 7px;font-size:10px;">3</span>
+      </div>
+
+      <div class="nav-section">Инструменты</div>
+      <div class="nav-item" onclick="showPage('ai',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><circle cx="19" cy="5" r="3"/></svg>
+        AI-помощник
+      </div>
+      <div class="nav-item" onclick="showPage('integrations',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Интеграции
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="plan-badge">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+        Бесплатный план
+      </div>
+      <div class="plan-upgrade">Перейти на Pro →</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="topbar">
+        <div class="topbar-title">Добро пожаловать 👋</div>
+        <div class="topbar-actions">
+          <span style="font-size:12px;color:var(--text-3);">Четверг, 14 мая 2026</span>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="metrics-grid">
+          <div class="metric">
+            <div class="metric-label">Клиенты</div>
+            <div class="metric-value">47</div>
+            <div class="metric-sub up">+3 за эту неделю</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Выручка (май)</div>
+            <div class="metric-value" style="font-size:20px;">12 400 000 сум</div>
+            <div class="metric-sub up">+18% к апрелю</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Активных сделок</div>
+            <div class="metric-value">8</div>
+            <div class="metric-sub down">2 срочных</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Общий долг</div>
+            <div class="metric-value" style="color:var(--red);font-size:20px;">3 100 000 сум</div>
+            <div class="metric-sub down">3 клиента</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="section-header">
+              <span class="section-title">Последние клиенты</span>
+              <button class="btn btn-sm" onclick="showPage('clients',document.querySelectorAll('.nav-item')[1])">Все →</button>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div class="avatar" style="background:#E1F5EE;color:#0F6E56;">АМ</div>
+                      <div><div style="font-weight:500;">Азиз Мирзаев</div><div style="font-size:11px;color:var(--text-3);">Салон красоты</div></div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-green">Активен</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div class="avatar" style="background:#FAEEDA;color:#854F0B;">НХ</div>
+                      <div><div style="font-weight:500;">Нилуфар Хасанова</div><div style="font-size:11px;color:var(--text-3);">Кафе</div></div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-amber">Ждёт</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div class="avatar" style="background:#FCEBEB;color:#A32D2D;">БЮ</div>
+                      <div><div style="font-weight:500;">Бобур Юсупов</div><div style="font-size:11px;color:var(--text-3);">Магазин</div></div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-red">Долг</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <span class="section-title">Срочные дела</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="padding:10px 12px;background:var(--red-light);border-radius:var(--radius-sm);border:1px solid #F09595;">
+                <div style="font-size:12px;font-weight:500;color:var(--red);">Долг — Бобур Юсупов</div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:2px;">1 800 000 сум · 43 дня без оплаты</div>
+              </div>
+              <div style="padding:10px 12px;background:var(--amber-light);border-radius:var(--radius-sm);border:1px solid #FAC775;">
+                <div style="font-size:12px;font-weight:500;color:var(--amber);">Сделка просрочена</div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Дилноза Каримова · 2 800 000 сум</div>
+              </div>
+              <div style="padding:10px 12px;background:var(--green-light);border-radius:var(--radius-sm);border:1px solid #9FE1CB;">
+                <div style="font-size:12px;font-weight:500;color:var(--green-dark);">Новый клиент сегодня</div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Нилуфар Хасанова · Позвонить</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div id="page-clients" class="page">
+      <div class="topbar">
+        <div class="topbar-title">Клиенты</div>
+        <div class="topbar-actions">
+          <input class="form-control" style="width:220px;" placeholder="Поиск..." />
+          <button class="btn btn-primary">+ Добавить клиента</button>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="card" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Клиент</th>
+                  <th>Телефон</th>
+                  <th>Тип бизнеса</th>
+                  <th>Статус</th>
+                  <th>Сумма сделок</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:#E1F5EE;color:#0F6E56;">АМ</div><div><div style="font-weight:500;">Азиз Мирзаев</div><div style="font-size:11px;color:var(--text-3);">С марта 2025</div></div></div></td>
+                  <td style="color:var(--text-2);">+998 90 123 45 67</td>
+                  <td><span class="badge badge-gray">Салон</span></td>
+                  <td><span class="badge badge-green">Активен</span></td>
+                  <td style="font-weight:500;">4 500 000 сум</td>
+                  <td><button class="btn btn-sm">Открыть</button></td>
+                </tr>
+                <tr>
+                  <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:#FAEEDA;color:#854F0B;">НХ</div><div><div style="font-weight:500;">Нилуфар Хасанова</div><div style="font-size:11px;color:var(--text-3);">Новый клиент</div></div></div></td>
+                  <td style="color:var(--text-2);">+998 91 234 56 78</td>
+                  <td><span class="badge badge-gray">Кафе</span></td>
+                  <td><span class="badge badge-amber">Ждёт</span></td>
+                  <td style="font-weight:500;">1 200 000 сум</td>
+                  <td><button class="btn btn-sm">Открыть</button></td>
+                </tr>
+                <tr>
+                  <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:#FCEBEB;color:#A32D2D;">БЮ</div><div><div style="font-weight:500;">Бобур Юсупов</div><div style="font-size:11px;color:var(--text-3);">С января 2025</div></div></div></td>
+                  <td style="color:var(--text-2);">+998 93 345 67 89</td>
+                  <td><span class="badge badge-gray">Магазин</span></td>
+                  <td><span class="badge badge-red">Должник</span></td>
+                  <td style="font-weight:500;color:var(--red);">−1 800 000 сум</td>
+                  <td><button class="btn btn-sm">Открыть</button></td>
+                </tr>
+                <tr>
+                  <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:#E6F1FB;color:#185FA5;">ДК</div><div><div style="font-weight:500;">Дилноза Каримова</div><div style="font-size:11px;color:var(--text-3);">С июня 2024</div></div></div></td>
+                  <td style="color:var(--text-2);">+998 94 456 78 90</td>
+                  <td><span class="badge badge-gray">Салон</span></td>
+                  <td><span class="badge badge-green">Активна</span></td>
+                  <td style="font-weight:500;">2 800 000 сум</td>
+                  <td><button class="btn btn-sm">Открыть</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEALS -->
+    <div id="page-deals" class="page">
+      <div class="topbar">
+        <div class="topbar-title">Сделки</div>
+        <button class="btn btn-primary">+ Новая сделка</button>
+      </div>
+      <div class="page-content">
+        <div class="card" style="padding:0;">
+          <table>
+            <thead>
+              <tr><th>Название</th><th>Клиент</th><th>Сумма</th><th>Статус</th><th>Срок</th><th>Действие</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div style="font-weight:500;">Поставка товара</div></td>
+                <td>Азиз Мирзаев</td>
+                <td style="font-weight:500;">4 500 000 сум</td>
+                <td><span class="badge badge-amber">В работе</span></td>
+                <td style="color:var(--text-3);">20.05.2026</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-sm btn-pdf" onclick="openDidox('Поставка товара','Азиз Мирзаев','4500000')">Счёт в Didox</button>
+                    <button class="btn btn-sm btn-tg" onclick="openFaktura('Поставка товара','Азиз Мирзаев','4500000')">Счёт в Faktura</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">Аренда оборудования</div></td>
+                <td>Нилуфар Хасанова</td>
+                <td style="font-weight:500;">1 200 000 сум</td>
+                <td><span class="badge badge-green">Оплачено</span></td>
+                <td style="color:var(--text-3);">10.05.2026</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-sm btn-pdf" onclick="openDidox('Аренда оборудования','Нилуфар Хасанова','1200000')">Счёт в Didox</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">Услуги дизайна</div></td>
+                <td>Дилноза Каримова</td>
+                <td style="font-weight:500;">2 800 000 сум</td>
+                <td><span class="badge badge-red">Просрочка</span></td>
+                <td style="color:var(--red);">01.05.2026 !</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-sm btn-pdf" onclick="openDidox('Услуги дизайна','Дилноза Каримова','2800000')">Счёт в Didox</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEBTS -->
+    <div id="page-debts" class="page">
+      <div class="topbar">
+        <div class="topbar-title">Долги клиентов</div>
+        <div style="font-size:14px;font-weight:600;color:var(--red);">Итого: 3 100 000 сум</div>
+      </div>
+      <div class="page-content">
+
+        <div class="debt-card">
+          <div class="debt-header">
+            <div>
+              <div class="debt-name">Бобур Юсупов</div>
+              <div class="debt-meta">Магазин · +998 93 345 67 89</div>
+            </div>
+            <span class="badge badge-red">43 дня</span>
+          </div>
+          <div class="debt-amount">1 800 000 сум</div>
+          <div class="debt-since">Задолженность с 01.04.2026 · Договора нет</div>
+          <div class="debt-footer">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-danger" onclick="openDebtContract({name:'Бобур Юсупов',phone:'+998 93 345 67 89',type:'Магазин',amount:'1 800 000',amountNum:1800000,days:43,since:'01.04.2026'})">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Составить договор-обязательство
+              </button>
+            </div>
+            <button class="btn btn-sm btn-tg" onclick="sendDebtReminder('Бобур Юсупов','+998 93 345 67 89','1 800 000')">Напомнить</button>
+          </div>
+        </div>
+
+        <div class="debt-card">
+          <div class="debt-header">
+            <div>
+              <div class="debt-name">Санжар Тошматов</div>
+              <div class="debt-meta">Кафе · +998 91 567 89 01</div>
+            </div>
+            <span class="badge badge-amber">29 дней</span>
+          </div>
+          <div class="debt-amount">900 000 сум</div>
+          <div class="debt-since">Задолженность с 15.04.2026 · Договора нет</div>
+          <div class="debt-footer">
+            <button class="btn btn-danger" onclick="openDebtContract({name:'Санжар Тошматов',phone:'+998 91 567 89 01',type:'Кафе',amount:'900 000',amountNum:900000,days:29,since:'15.04.2026'})">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Составить договор-обязательство
+            </button>
+            <button class="btn btn-sm btn-tg" onclick="sendDebtReminder('Санжар Тошматов','+998 91 567 89 01','900 000')">Напомнить</button>
+          </div>
+        </div>
+
+        <div class="debt-card has-contract">
+          <div class="debt-header">
+            <div>
+              <div class="debt-name">Малика Рашидова</div>
+              <div class="debt-meta">Салон · +998 94 678 90 12</div>
+            </div>
+            <span class="badge badge-green">Договор подписан</span>
+          </div>
+          <div class="debt-amount" style="color:var(--amber);">400 000 сум</div>
+          <div class="debt-since">Задолженность с 05.05.2026 · Срок погашения: 28.05.2026</div>
+          <div class="debt-footer">
+            <span style="font-size:12px;color:var(--green-dark);">✓ Договор ДО-7821/2026 оформлен</span>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-sm btn-tg">Напомнить</button>
+              <button class="btn btn-sm btn-pdf">Скачать PDF</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AI ASSISTANT -->
+    <div id="page-ai" class="page">
+      <div class="topbar">
+        <div class="topbar-title">AI-помощник</div>
+        <span class="badge badge-green">Работает на Claude</span>
+      </div>
+      <div class="page-content" style="max-width:680px;">
+        <div id="ai-messages" style="margin-bottom:16px;">
+          <div class="ai-message assistant">
+            Здравствуйте! Я ваш бизнес-ассистент. Могу помочь:<br><br>
+            • Написать напоминание о долге клиенту<br>
+            • Составить коммерческое предложение<br>
+            • Подготовить текст для Instagram или Telegram<br>
+            • Ответить на вопросы по законодательству Узбекистана<br>
+            • Помочь с любым рабочим текстом
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+          <button class="btn btn-sm" onclick="aiQuick('Напиши вежливое напоминание о долге клиенту Бобур Юсупов (магазин). Сумма долга: 1 800 000 сум, просрочка 43 дня. Напомни о необходимости оплаты и о том, что подписан договор-обязательство.')">Напомнить о долге</button>
+          <button class="btn btn-sm" onclick="aiQuick('Напиши короткий текст для Instagram-публикации о нашем сервисе Biznest CRM для малого бизнеса в Узбекистане. Легко, по-узбекски или по-русски.')">Текст для Instagram</button>
+          <button class="btn btn-sm" onclick="aiQuick('Составь коммерческое предложение для владельца салона красоты в Узбекистане. Предлагаем CRM-систему Biznest за 150 000 сум/месяц.')">Коммерческое предложение</button>
+          <button class="btn btn-sm" onclick="aiQuick('Объясни простыми словами: какие документы нужны при взыскании долга через суд в Узбекистане?')">Взыскание долга: закон УЗ</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <textarea class="form-control" id="ai-input" rows="2" placeholder="Напишите ваш вопрос или задачу..."></textarea>
+          <button class="btn btn-primary" style="align-self:flex-end;white-space:nowrap;" onclick="sendAiMessage()">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Отправить
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTEGRATIONS -->
+    <div id="page-integrations" class="page">
+      <div class="topbar">
+        <div class="topbar-title">Интеграции</div>
+      </div>
+      <div class="page-content" style="max-width:600px;">
+        <div class="notice">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Интеграции с Didox и Faktura.uz работают через передачу данных. При нажатии кнопки — данные копируются в буфер, вы вставляете их на сайте оператора ЭДО.
+        </div>
+        <div class="card">
+          <div class="integration-row">
+            <div class="integration-info">
+              <div class="integration-logo" style="background:#E1F5EE;color:#0F6E56;font-size:12px;">DX</div>
+              <div>
+                <div class="integration-name">Didox.uz</div>
+                <div class="integration-desc">Электронный документооборот · ЭСФ · Договоры · ТТН</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="badge badge-green">Подключено</span>
+              <button class="btn btn-sm" onclick="window.open('https://didox.uz','_blank')">Открыть →</button>
+            </div>
+          </div>
+          <div class="integration-row">
+            <div class="integration-info">
+              <div class="integration-logo" style="background:#E6F1FB;color:#185FA5;font-size:12px;">FK</div>
+              <div>
+                <div class="integration-name">Faktura.uz</div>
+                <div class="integration-desc">Первый официальный оператор ЭДО в Узбекистане</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="badge badge-green">Подключено</span>
+              <button class="btn btn-sm" onclick="window.open('https://faktura.uz','_blank')">Открыть →</button>
+            </div>
+          </div>
+          <div class="integration-row">
+            <div class="integration-info">
+              <div class="integration-logo" style="background:#EAF3FF;color:#185FA5;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
+              </div>
+              <div>
+                <div class="integration-name">Telegram Bot</div>
+                <div class="integration-desc">Отправка напоминаний и договоров клиентам</div>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-sm btn-primary">Настроить</button>
+            </div>
+          </div>
+          <div class="integration-row">
+            <div class="integration-info">
+              <div class="integration-logo" style="background:#F1EFE8;color:#5F5E5A;font-size:12px;">1С</div>
+              <div>
+                <div class="integration-name">1C: Бухгалтерия</div>
+                <div class="integration-desc">Синхронизация данных и документов</div>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-sm">Подключить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEBT CONTRACT FLOW -->
+    <div id="page-debt-form" class="page">
+      <div class="topbar">
+        <div class="topbar-title">Договор-обязательство</div>
+        <button class="btn" onclick="showPage('debts',document.querySelectorAll('.nav-item')[3])">← Назад</button>
+      </div>
+      <div class="page-content" style="max-width:560px;">
+        <div class="steps" style="margin-bottom:24px;">
+          <div class="step-item active" id="st1"><div class="step-num">1</div> Реквизиты</div>
+          <div class="step-line"></div>
+          <div class="step-item" id="st2"><div class="step-num">2</div> Генерация</div>
+          <div class="step-line"></div>
+          <div class="step-item" id="st3"><div class="step-num">3</div> Получить документ</div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:13px;font-weight:500;margin-bottom:14px;color:var(--text-2);">Данные должника (заполнено автоматически)</div>
+          <div id="debtor-info-box" style="margin-bottom:16px;padding:12px 14px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);font-size:13px;line-height:1.8;color:var(--text-2);"></div>
+
+          <div style="font-size:13px;font-weight:500;margin-bottom:14px;color:var(--text-2);">Ваши реквизиты (кредитор)</div>
+          <div class="form-row" style="margin-bottom:12px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Наименование компании / ИП</label>
+              <input class="form-control" id="f-cred" placeholder="ООО «Ваша компания»">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">ИНН</label>
+              <input class="form-control" id="f-inn" placeholder="123456789">
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:12px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Руководитель (ФИО)</label>
+              <input class="form-control" id="f-dir" placeholder="Иванов Иван Иванович">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Срок погашения</label>
+              <input class="form-control" type="date" id="f-dead">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Описание задолженности</label>
+            <div class="auto-desc-box">
+              <div class="auto-desc-label">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                Сформировано автоматически на основе данных клиента
+              </div>
+              <div id="auto-desc-text" style="color:var(--text);font-size:13px;"></div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px;">
+            <button class="btn" onclick="showPage('debts',document.querySelectorAll('.nav-item')[3])">Отмена</button>
+            <button class="btn btn-primary" onclick="generateContract()">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              Сгенерировать договор
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERATING -->
+    <div id="page-generating" class="page">
+      <div class="topbar"><div class="topbar-title">Генерирую договор...</div></div>
+      <div class="page-content" style="max-width:560px;">
+        <div class="card" style="text-align:center;padding:40px 20px;">
+          <div class="dots-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <div id="gen-status" style="font-size:14px;color:var(--text-2);margin-top:8px;">Составляю договор по законодательству Республики Узбекистан...</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:6px;">Обычно занимает 5–10 секунд</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRACT RESULT -->
+    <div id="page-contract" class="page">
+      <div class="topbar">
+        <div class="topbar-title" style="color:var(--green-dark);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:6px;"><polyline points="20 6 9 17 4 12"/></svg>
+          Договор готов
+        </div>
+        <button class="btn" onclick="showPage('debts',document.querySelectorAll('.nav-item')[3])">← К долгам</button>
+      </div>
+      <div class="page-content" style="max-width:680px;">
+        <div class="steps" style="margin-bottom:20px;">
+          <div class="step-item done" id="st1r"><div class="step-num">✓</div> Реквизиты</div>
+          <div class="step-line"></div>
+          <div class="step-item done" id="st2r"><div class="step-num">✓</div> Генерация</div>
+          <div class="step-line"></div>
+          <div class="step-item active" id="st3r"><div class="step-num">3</div> Получить документ</div>
+        </div>
+
+        <div class="card" style="margin-bottom:14px;">
+          <div style="font-size:12px;color:var(--text-3);margin-bottom:8px;">Предпросмотр договора</div>
+          <div class="contract-output" id="contract-text"></div>
+        </div>
+
+        <div class="share-grid">
+          <div class="share-card" onclick="downloadPDF()">
+            <svg width="28" height="28" fill="none" stroke="#3B6D11" stroke-width="1.6" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <div class="share-card-title">Скачать PDF</div>
+            <div class="share-card-sub">Готов к печати и подписанию</div>
+          </div>
+          <div class="share-card" onclick="openTgPreview()">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#185FA5"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
+            <div class="share-card-title">Отправить в Telegram</div>
+            <div class="share-card-sub">Клиент получит текст договора</div>
+          </div>
+          <div class="share-card" onclick="copyContract()">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <div class="share-card-title">Скопировать текст</div>
+            <div class="share-card-sub">Вставить в любой редактор</div>
+          </div>
+          <div class="share-card" onclick="openDidoxFromContract()">
+            <div style="font-size:22px;font-weight:700;color:#0F6E56;margin-bottom:4px;">DX</div>
+            <div class="share-card-title">Открыть в Didox</div>
+            <div class="share-card-sub">Данные скопированы автоматически</div>
+          </div>
+        </div>
+
+        <div id="share-result" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- TELEGRAM PREVIEW -->
+    <div id="page-tg-preview" class="page">
+      <div class="topbar">
+        <div class="topbar-title">Предпросмотр — Telegram</div>
+        <button class="btn" onclick="showPage('contract',null)">← Назад</button>
+      </div>
+      <div class="page-content" style="max-width:460px;">
+        <div class="card" style="margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+            <div style="width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;">B</div>
+            <div>
+              <div style="font-size:13px;font-weight:600;">Biznest · Уведомление</div>
+              <div style="font-size:11px;color:var(--text-3);">сейчас</div>
+            </div>
+          </div>
+          <div class="tg-bubble" id="tg-message-body"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:12px;">
+          Сообщение откроется в Telegram. Выберите нужного получателя и нажмите «Отправить».
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-tg" style="flex:1;" onclick="sendViaTelegram()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
+            Отправить через Telegram
+          </button>
+          <button class="btn" onclick="showPage('contract',null)">Отмена</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let currentDebtor = null;
+let contractText = '';
+let contractNum = '';
+
+// ── Navigation ──
+function showPage(name, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const p = document.getElementById('page-' + name);
+  if (p) p.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+}
+
+// ── Toast ──
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ── Debt contract flow ──
+function openDebtContract(debtor) {
+  currentDebtor = debtor;
+
+  const due = new Date();
+  due.setDate(due.getDate() + 14);
+  document.getElementById('f-dead').value = due.toISOString().split('T')[0];
+
+  const desc = `Задолженность за поставленные товары/услуги перед кредитором. Должник: ${debtor.name} (${debtor.type}). Сумма долга: ${debtor.amount} сум. Задолженность образовалась с ${debtor.since} и на сегодняшний день составляет ${debtor.days} календарных дней. Оплата не произведена.`;
+
+  document.getElementById('auto-desc-text').textContent = desc;
+  document.getElementById('debtor-info-box').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;">
+      <div><span style="color:var(--text-3);">Должник:</span> <strong>${debtor.name}</strong></div>
+      <div><span style="color:var(--text-3);">Телефон:</span> ${debtor.phone}</div>
+      <div><span style="color:var(--text-3);">Тип бизнеса:</span> ${debtor.type}</div>
+      <div><span style="color:var(--text-3);">Просрочка:</span> <span style="color:var(--red);font-weight:500;">${debtor.days} дней</span></div>
+      <div><span style="color:var(--text-3);">Сумма долга:</span> <strong style="color:var(--red);">${debtor.amount} сум</strong></div>
+      <div><span style="color:var(--text-3);">С даты:</span> ${debtor.since}</div>
+    </div>`;
+
+  showPage('debt-form', null);
+  document.querySelectorAll('.nav-item')[3].classList.add('active');
+}
+
+async function generateContract() {
+  const cred  = document.getElementById('f-cred').value.trim() || 'ООО «Ваша компания»';
+  const inn   = document.getElementById('f-inn').value.trim()  || 'не указан';
+  const dir   = document.getElementById('f-dir').value.trim()  || 'Руководитель';
+  const dead  = document.getElementById('f-dead').value;
+  const desc  = document.getElementById('auto-desc-text').textContent;
+  const deadFmt = dead ? new Date(dead).toLocaleDateString('ru-RU') : '28.05.2026';
+
+  showPage('generating', null);
+
+  const statuses = [
+    'Составляю договор по законодательству Республики Узбекистан...',
+    'Проверяю соответствие нормам гражданского права РУз...',
+    'Формулирую обязательства и штрафные условия...',
+    'Оформляю блок подписей и реквизиты сторон...'
+  ];
+  let si = 0;
+  const statusEl = document.getElementById('gen-status');
+  const iv = setInterval(() => { statusEl.textContent = statuses[++si % statuses.length]; }, 1800);
+
+  contractNum = 'ДО-' + Math.floor(1000 + Math.random() * 9000) + '/' + new Date().getFullYear();
+  const today = new Date().toLocaleDateString('ru-RU');
+
+  const prompt = `Составь юридически грамотный договор-обязательство о признании и погашении долга в соответствии с законодательством Республики Узбекистан (Гражданский кодекс РУз, нормы об обязательствах).
+
+Требования к документу:
+— Строгий официально-деловой стиль
+— Без орфографических и грамматических ошибок
+— Структура: реквизиты документа → стороны → предмет договора → сумма и сроки → ответственность за просрочку → порядок расчётов → срок действия → подписи
+— Штраф за просрочку: 0,1% от суммы долга за каждый день просрочки (стандарт РУз)
+— Документ должен быть готов к подписанию
+
+Данные для заполнения:
+Номер договора: ${contractNum}
+Дата составления: ${today}
+Город: Ташкент
+
+КРЕДИТОР:
+Наименование: ${cred}
+ИНН: ${inn}
+Руководитель: ${dir}
+
+ДОЛЖНИК:
+ФИО / наименование: ${currentDebtor.name}
+Телефон: ${currentDebtor.phone}
+Вид деятельности: ${currentDebtor.type}
+
+ЗАДОЛЖЕННОСТЬ:
+Сумма: ${currentDebtor.amount} сум (${currentDebtor.amountNum ? numWords(currentDebtor.amountNum) : currentDebtor.amount} сум)
+Дата возникновения задолженности: ${currentDebtor.since}
+Количество дней просрочки: ${currentDebtor.days}
+Срок погашения по настоящему договору: ${deadFmt}
+Основание: ${desc}
+
+Максимальный объём — 420 слов. В конце обязательно добавь блок для подписей обеих сторон с полями: подпись, расшифровка, дата, печать.`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    contractText = data.content.map(i => i.text || '').join('\n');
+  } catch (e) {
+    contractText = 'Ошибка соединения. Проверьте интернет и попробуйте ещё раз.';
+  }
+
+  clearInterval(iv);
+  document.getElementById('contract-text').textContent = contractText;
+  document.getElementById('share-result').innerHTML = '';
+  showPage('contract', null);
+  document.querySelectorAll('.nav-item')[3].classList.add('active');
+}
+
+// ── Copy ──
+function copyContract() {
+  navigator.clipboard.writeText(contractText).then(() => {
+    showToast('Текст скопирован в буфер обмена');
+    document.getElementById('share-result').innerHTML =
+      '<div style="background:var(--green-light);border:1px solid #9FE1CB;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--green-dark);display:flex;align-items:center;gap:8px;"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Текст скопирован — вставьте в Word, Google Docs или любой редактор</div>';
+  }).catch(() => showToast('Не удалось скопировать — попробуйте вручную', 'error'));
+}
+
+// ── PDF ──
+function downloadPDF() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 22;
+    const usableW = pageW - margin * 2;
+
+    // Header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('ДОГОВОР-ОБЯЗАТЕЛЬСТВО', pageW / 2, 24, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text('№ ' + contractNum, pageW / 2, 30, { align: 'center' });
+    doc.text('г. Ташкент', pageW / 2, 36, { align: 'center' });
+
+    // Divider
+    doc.setDrawColor(200, 200, 200);
+    doc.line(margin, 40, pageW - margin, 40);
+
+    // Body
+    doc.setTextColor(30, 30, 30);
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'normal');
+
+    const lines = doc.splitTextToSize(contractText, usableW);
+    let y = 48;
+    lines.forEach(line => {
+      if (y > pageH - 24) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, margin, y);
+      y += 5.2;
+    });
+
+    // Footer
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(220, 220, 220);
+      doc.line(margin, pageH - 14, pageW - margin, pageH - 14);
+      doc.setFontSize(8);
+      doc.setTextColor(170, 170, 170);
+      doc.text('Biznest CRM · biznest.uz · Документ соответствует законодательству РУз', margin, pageH - 8);
+      doc.text('Стр. ' + i + ' / ' + totalPages, pageW - margin, pageH - 8, { align: 'right' });
+    }
+
+    doc.save('dogovor-' + contractNum + '.pdf');
+    showToast('PDF успешно скачан! Проверьте папку «Загрузки»');
+    document.getElementById('share-result').innerHTML =
+      '<div style="background:var(--green-light);border:1px solid #9FE1CB;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--green-dark);display:flex;align-items:center;gap:8px;margin-top:0;"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PDF скачан — ищите файл <strong>dogovor-' + contractNum + '.pdf</strong> в папке «Загрузки»</div>';
+  } catch (e) {
+    showToast('Ошибка создания PDF', 'error');
+  }
+}
+
+// ── Telegram ──
+function openTgPreview() {
+  const msg = `📋 *Договор-обязательство ${contractNum}*\n\nУважаемый(ая) ${currentDebtor ? currentDebtor.name : 'Клиент'},\n\nНаправляем вам текст договора-обязательства о погашении задолженности.\n\nСумма долга: *${currentDebtor ? currentDebtor.amount : ''} сум*\n\nПросим ознакомиться и подписать документ в ближайшее время.\n\n` + contractText.slice(0, 600) + (contractText.length > 600 ? '\n\n[...полный текст в документе PDF]' : '');
+  document.getElementById('tg-message-body').textContent = msg;
+  showPage('tg-preview', null);
+  document.querySelectorAll('.nav-item')[3].classList.add('active');
+}
+
+function sendViaTelegram() {
+  const msg = `Договор-обязательство ${contractNum}\n\n${contractText}`;
+  window.open('https://t.me/share/url?url=&text=' + encodeURIComponent(msg), '_blank');
+  showToast('Открываем Telegram...');
+}
+
+// ── Didox integration ──
+function openDidox(deal, client, amount) {
+  const data = `Наименование: ${deal}\nКлиент: ${client}\nСумма: ${amount} сум`;
+  navigator.clipboard.writeText(data).catch(() => {});
+  showToast('Данные скопированы — вставьте в Didox');
+  window.open('https://didox.uz', '_blank');
+}
+
+function openFaktura(deal, client, amount) {
+  const data = `Наименование: ${deal}\nКлиент: ${client}\nСумма: ${amount} сум`;
+  navigator.clipboard.writeText(data).catch(() => {});
+  showToast('Данные скопированы — вставьте в Faktura.uz');
+  window.open('https://faktura.uz', '_blank');
+}
+
+function openDidoxFromContract() {
+  navigator.clipboard.writeText(contractText).catch(() => {});
+  showToast('Договор скопирован — вставьте в Didox');
+  window.open('https://didox.uz', '_blank');
+}
+
+// ── Debt reminder ──
+function sendDebtReminder(name, phone, amount) {
+  const msg = `Уважаемый(ая) ${name},\n\nНапоминаем о наличии задолженности перед нашей компанией на сумму ${amount} сум.\n\nПросим погасить долг в ближайшее время. При необходимости готовы обсудить условия рассрочки.\n\nС уважением, Biznest CRM`;
+  window.open('https://t.me/share/url?url=&text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ── AI Assistant ──
+async function sendAiMessage() {
+  const input = document.getElementById('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const box = document.getElementById('ai-messages');
+  box.innerHTML += `<div class="ai-message user">${escHtml(text)}</div>`;
+  box.innerHTML += `<div class="ai-message assistant" id="ai-loading"><div class="dots-loader" style="justify-content:flex-start;margin:4px 0;"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  input.value = '';
+  box.scrollTop = box.scrollHeight;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        system: 'Ты бизнес-ассистент для малого бизнеса в Узбекистане. Отвечай кратко и практично. Без ошибок. Если спрашивают про законодательство — про законы Узбекистана.',
+        messages: [{ role: 'user', content: text }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content.map(i => i.text || '').join('\n');
+    document.getElementById('ai-loading').outerHTML = `<div class="ai-message assistant">${escHtml(reply).replace(/\n/g,'<br>')}</div>`;
+  } catch (e) {
+    document.getElementById('ai-loading').outerHTML = `<div class="ai-message assistant">Ошибка соединения. Попробуйте ещё раз.</div>`;
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+function aiQuick(prompt) {
+  document.getElementById('ai-input').value = prompt;
+  sendAiMessage();
+}
+
+// ── Utils ──
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function numWords(n) {
+  const units = ['','один','два','три','четыре','пять','шесть','семь','восемь','девять'];
+  const teens = ['десять','одиннадцать','двенадцать','тринадцать','четырнадцать','пятнадцать','шестнадцать','семнадцать','восемнадцать','девятнадцать'];
+  const tens = ['','','двадцать','тридцать','сорок','пятьдесят','шестьдесят','семьдесят','восемьдесят','девяносто'];
+  const hundreds = ['','сто','двести','триста','четыреста','пятьсот','шестьсот','семьсот','восемьсот','девятьсот'];
+  if (n === 0) return 'ноль';
+  let result = '';
+  const m = Math.floor(n / 1000000);
+  const th = Math.floor((n % 1000000) / 1000);
+  const h = Math.floor((n % 1000) / 100);
+  const t = Math.floor((n % 100) / 10);
+  const u = n % 10;
+  if (m) result += m + ' миллион' + (m > 1 ? 'ов' : '') + ' ';
+  if (th) result += th + ' тысяч ';
+  if (h) result += hundreds[h] + ' ';
+  if (t === 1) result += teens[u] + ' ';
+  else { if (t) result += tens[t] + ' '; if (u) result += units[u] + ' '; }
+  return result.trim();
+}
+
+// Enter key for AI
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && e.ctrlKey && document.getElementById('ai-input') === document.activeElement) {
+    sendAiMessage();
+  }
+});
+</script>
+</body>
+</html>
